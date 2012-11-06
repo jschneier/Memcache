@@ -5,21 +5,12 @@
 #include "memcache.h"
 #include "socket.h"
 
-#define DBSIZE 1024
 #define BUFSIZE 1024
-
-typedef struct block {
-    char *key;
-    char *data;
-    char *flags;
-    unsigned long len;
-    struct block *next;
-} block;
+#define DBSIZE 2048
 
 void *thread(void *vargp);
-int add_block(int, char *, char *);
 
-static block *database[DBSIZE];
+block *database[DBSIZE];
 
 int main(int argc, char **argv) {
 
@@ -36,32 +27,6 @@ int main(int argc, char **argv) {
         *conn_fd = accept(sock_fd, (struct sockaddr *) &addr, &clientsize);
         pthread_create(&tid, NULL, &thread, conn_fd);
     }
-
-    return 0;
-}
-
-int add_block(int index, char *key, char* data) {
-
-    block *new = malloc(sizeof(block));
-    if (new == NULL)
-        return -1;
-
-    new->key = key;
-    new->data = data;
-    new->next = NULL;
-
-    //first insert at this location
-    if (database[index] == NULL)
-        database[index] = new;
-
-    //hash collision -> linked list
-    else {
-        block *current = database[index];
-        //advance to the last place
-        while (current->next != NULL)
-            current = current->next;
-        current->next = new;
-        }
 
     return 0;
 }

@@ -10,7 +10,20 @@ typedef struct {
     char *key;
     char *flags;
     unsigned long exptime;
-    unsigned int bytes;
+    unsigned long bytes;
+    long change;
     bool no_reply;
     char *data;
 } parsed_text;
+
+typedef struct block {
+    char *key;
+    char *data;
+    char *flags;
+    unsigned long exptime;
+    unsigned long bytes;
+    unsigned long long cas_uniquie;
+    struct block *next;
+} block;
+
+extern block* database[];
