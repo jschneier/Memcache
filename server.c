@@ -78,12 +78,15 @@ void *thread(void *vargp) {
         status = recv(conn_fd, buf, BUFSIZE, 0);
 
         if (status == -1) {
-            fprintf(stderr, "recv error on sock_fd: %d\n", conn_fd);
+            fprintf(stderr, "recv error: %s\n", strerror(errno));
+            close(conn_fd);
+            break;
             }
         else if (status == 0) {
             close(conn_fd);
             break;
             }
+        memset(buf, 0, BUFSIZE);
 
         //if parse();
     }

@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra
 objects = socket.o server.o
 
 memcache: $(objects)
-	cc -o memcache $(objects)
+	$(CC) $(CFLAGS) -o memcache $(objects)
 
 server.o: memcache.h socket.h
 
