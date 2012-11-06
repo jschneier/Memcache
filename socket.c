@@ -1,3 +1,9 @@
+#include "memcache.h"
+#include "socket.h"
+
+#define PORT "3303"
+#define BACKLOG 20
+
 int init_socket(int *sock_fd) {
 
     struct addrinfo hints, *info;

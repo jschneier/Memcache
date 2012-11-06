@@ -1,13 +1,11 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <stdbool.h>
 
 #include "memcache.h"
+#include "socket.h"
 
 #define DBSIZE 1024
-#define PORT "3303"
-#define BACKLOG 20
 #define BUFSIZE 1024
 
 typedef struct block {
@@ -80,7 +78,7 @@ void *thread(void *vargp) {
         status = recv(conn_fd, buf, BUFSIZE, 0);
 
         if (status == -1) {
-            fprintf(stderr, "recv error on sock-fd: %d\n", conn_fd);
+            fprintf(stderr, "recv error on sock_fd: %d\n", conn_fd);
             }
         else if (status == 0) {
             close(conn_fd);
