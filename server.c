@@ -11,6 +11,8 @@
 void *thread(void *vargp);
 
 block *database[DBSIZE];
+#define BAD_CMD "ERROR\r\n"
+#define BAD_CMD_LEN 7
 
 int main(int argc, char **argv) {
 
@@ -23,7 +25,11 @@ int main(int argc, char **argv) {
         perror("Error returned in init_socket");
 
     for(;;) {
-        conn_fd = malloc(sizeof(int)); //check return code
+        conn_fd = malloc(sizeof(int));
+        if (conn_fd == NULL) {
+            perror("malloc error");
+            exit(1);
+            }
         *conn_fd = accept(sock_fd, (struct sockaddr *) &addr, &clientsize);
         pthread_create(&tid, NULL, &thread, conn_fd);
     }
@@ -33,9 +39,13 @@ int main(int argc, char **argv) {
 
 void *thread(void *vargp) {
     pthread_detach(pthread_self());
-    int conn_fd = *((int *)vargp);
-    free(vargp); //check the return code
-    int status;
+    int status, conn_fd;
+    conn_fd = *((int *)vargp);
+    status = free(vargp);
+    if (status < 0) {
+        perror("free error");
+        exit(1)
+        }
     char buf[BUFSIZE] = {0};
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
@@ -47,13 +57,41 @@ void *thread(void *vargp) {
             close(conn_fd);
             break;
             }
-        else if (status == 0) {
+        if (status == 0) {
             close(conn_fd);
             break;
             }
-        memset(buf, 0, BUFSIZE);
 
+        int cmd = parse_cmd(buf);
+        switch(cmd) {
+            case STORE:
+                parse_store(buf, parsed);
+                break;
+            case CAS:
+                parse_cas(buf, parsed);
+                break;
+            case GET:
+                parse_get(buf, parsed);
+                break;
+            case DEL:
+                parse_del(buf, parsed);
+                break;
+            case CHANGE:
+                parse_change(buf, parsed);
+                break;
+            case STATS:
+                parse_stats(buf, parsed);
+                break;
+            case QUIT:
+                close(conn_fd);
+                pthread_exit();
+                break;
+            case ERROR:
+                send(conn_fd, BAD_CMD, BAD_CMD_LEN, 0);
+                break;
+        }
         //if parse();
+        memset(buf, 0, BUFSIZE);
     }
     return NULL;
 }

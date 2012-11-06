@@ -27,3 +27,8 @@ typedef struct block {
 } block;
 
 extern block* database[];
+
+enum CMDS {
+    STORE, CAS, GET, DEL,
+    CHANGE, STATS, QUIT, ERROR
+    };
