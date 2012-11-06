@@ -4,8 +4,8 @@
 
 #include "memcache.h"
 #include "socket.h"
+#include "utils.h"
 
-#define BUFSIZE 1024
 #define DBSIZE 2048
 
 void *thread(void *vargp);
@@ -41,11 +41,7 @@ void *thread(void *vargp) {
     pthread_detach(pthread_self());
     int status, conn_fd;
     conn_fd = *((int *)vargp);
-    status = free(vargp);
-    if (status < 0) {
-        perror("free error");
-        exit(1)
-        }
+    free(vargp);
     char buf[BUFSIZE] = {0};
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
@@ -66,9 +62,13 @@ void *thread(void *vargp) {
         switch(cmd) {
             case STORE:
                 parse_store(buf, parsed);
-                break;
-            case CAS:
-                parse_cas(buf, parsed);
+                zero_buffer(buf, BUFSIZE);
+                status = recv(conn_fd, buf, BUFSIZE, 0);
+                if (status == -1)
+                    fprintf(stderr, "recv error: %s\n", strerror(errno));
+                if (status != parsed->bytes)
+                    fprintf(stderr, "data block size not equal to header value");
+                //do thing to actually store
                 break;
             case GET:
                 parse_get(buf, parsed);
@@ -84,14 +84,14 @@ void *thread(void *vargp) {
                 break;
             case QUIT:
                 close(conn_fd);
-                pthread_exit();
+                pthread_exit(NULL);
                 break;
             case ERROR:
                 send(conn_fd, BAD_CMD, BAD_CMD_LEN, 0);
                 break;
         }
-        //if parse();
-        memset(buf, 0, BUFSIZE);
+        zero_buffer(buf, BUFSIZE);
     }
+
     return NULL;
 }

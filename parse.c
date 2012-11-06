@@ -9,11 +9,8 @@ int parse_cmd(char *buf) {
     char *cmd = strtok(temp, delim);
 
     if (STR_EQ(cmd, "set") || STR_EQ(cmd, "add") || STR_EQ(cmd, "replace") ||
-            STR_EQ(cmd, "append") || STR_EQ(cmd, "prepend"))
+            STR_EQ(cmd, "append") || STR_EQ(cmd, "prepend") || STR_EQ(cmd, "cas"))
         return STORE;
-
-    else if (STR_EQ(cmd, "cas"))
-        return CAS;
 
     else if (STR_EQ(cmd, "get") || STR_EQ(cmd, "gets"))
         return GET;

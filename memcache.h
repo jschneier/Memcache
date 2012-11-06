@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#define BUFSIZE 1024
 typedef struct {
     char *cmd;
     char *key;
@@ -29,6 +30,6 @@ typedef struct block {
 extern block* database[];
 
 enum CMDS {
-    STORE, CAS, GET, DEL,
-    CHANGE, STATS, QUIT, ERROR
+    STORE, GET, DEL, CHANGE,
+    STATS, QUIT, ERROR
     };

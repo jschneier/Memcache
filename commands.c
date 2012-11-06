@@ -6,8 +6,8 @@ int set(int index, parsed_text *parsed) {
     if (new == NULL)
         return -1;
 
-    new->key = key;
-    new->data = data;
+    new->key = parsed->key;
+    new->data = parsed->data;
     new->next = NULL;
 
     //first insert at this location
@@ -33,7 +33,7 @@ int incr(int index, parsed_text *parsed) {
     if (current == NULL)
         return -1;
 
-    while(current->key != parsed_text->key)
+    while (current->key != parsed->key)
         current = current->next;
 
     //we iterated through and didn't find a match
@@ -47,7 +47,7 @@ int incr(int index, parsed_text *parsed) {
     if (status == EOF)
         return -1;
 
-    value += parsed_text->change;
+    value += parsed->change;
     //need to use sprintf to convert back for data
 
     return 0;
