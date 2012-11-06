@@ -1,1 +1,4 @@
-CFLAGS=-Wall -Wextra
+CC = gcc
+CFLAGS = -Wall -Wextra
+
+

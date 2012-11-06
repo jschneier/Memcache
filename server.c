@@ -1,10 +1,7 @@
-#include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <stdbool.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 
 #include "memcache.h"
 
