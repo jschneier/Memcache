@@ -3,6 +3,7 @@
 #include <pthread.h>
 
 #include "memcache.h"
+#include "commands.h"
 #include "socket.h"
 #include "parse.h"
 
