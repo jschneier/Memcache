@@ -1,31 +1,35 @@
 #include "memcache.h"
 #include "hash.h"
 
-}
-/*void store(parsed_text *parsed) {
+#define STORED "STORED\r\n"
+#define NOT_STORED "NOT_STORE\r\n"
+#define EXISTS "EXISTS\r\n"
+#define NOT_FOUND "NOT_FOUND\r\n"
+
+char *store(parsed_text *parsed) {
     unsigned index = hash(parsed->key) % DBSIZE;
 
     if (STR_EQ(parsed->cmd, "set"))
-        set(index, parsed);
+        return set(index, parsed);
 
     else if (STR_EQ(parsed->cmd, "add"))
-        add(index, parsed);
+        return add(index, parsed);
 
     else if (STR_EQ(parsed->cmd, "replace"))
-        replace(index, parsed);
+        return replace(index, parsed);
 
     else if (STR_EQ(parsed->cmd, "append"))
-        append(index, parsed);
+        return append(index, parsed);
 
     else if (STR_EQ(parsed->cmd, "prepend"))
-        prepend(index, parsed);
+        return prepend(index, parsed);
 
     else
-        cas(index, parsed);
+        return cas(index, parsed);
 
-}*/
+}
 
-static void
+static char*
 set(int index, parsed_text *parsed) {
 
     block *cur = database[index];
@@ -39,9 +43,10 @@ set(int index, parsed_text *parsed) {
 
         cur->next = init_block(parsed);
     }
+    return STORED;
 }
 
-static void
+static char*
 add(int index, parsed_text *parsed) {
 
     block *cur = database[index];
@@ -54,17 +59,20 @@ add(int index, parsed_text *parsed) {
             cur = cur->next;
         
         //want to store on a key we don't already have, ignore matching keys
-        if (cur->next == NULL)
-            cur->next = init_block(parsed);
+        if (cur->next != NULL)
+            return NOT_STORED;
+
+        cur->next = init_block(parsed);
     }
+    return STORED;
 }
 
-static void
+static char*
 replace(int index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
-        ; //only want to store if we already match the key, can't match if first
+        return NOT_STORED; //only want to store if we already match the key
 
     else {
         //advance to the block before matching key or the end of the list
@@ -76,16 +84,19 @@ replace(int index, parsed_text *parsed) {
             block *temp = cur->next->next //store the next pointer so we don't break up the linked list
             cur->next = init_block(parsed);
             cur->next->next = temp;
+            return STORED;
             }
+        else
+            return NOT_STORED;
     }
 }
 
-static void
+static char*
 append(int index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
-        ; //can't append if key not in hash
+        return NOT_STORED; //can't append if key not in hash
 
     else {
         //advance to the block before matching key or the end of the list
@@ -93,12 +104,15 @@ append(int index, parsed_text *parsed) {
             cur = cur->next;
 
         if (cur->next != NULL) {
-            //TODO
+            //TODO: realloc return STORED
         }
+
+        else
+            return NOT_STORED;
     }
 }
 
-static void
+static char*
 incr(int index, parsed_text *parsed) {
     
     block *current = database[index];
@@ -125,3 +139,19 @@ incr(int index, parsed_text *parsed) {
 
     return 0;
     }
+
+static block *
+init_block(parsed_text *parsed) {
+
+    block *ret = malloc(sizeof(block));
+
+    ret->key = parsed->key;
+    ret->flags = parsed->flags;
+    ret->exptime = parsed->exptime;
+    ret->bytes = parsed->bytes;
+    ret->data = parsed->data;
+    ret->next = NULL;
+    //TODO ret->cas_unique
+
+    return ret;
+}

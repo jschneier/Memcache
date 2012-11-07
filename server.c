@@ -75,7 +75,9 @@ void *thread(void *vargp) {
                     break;
                     }
 
-                store(parsed);
+                resp = store(parsed);
+                if (!parsed->no_reply)
+                    send(conn_fd, resp, strlen(resp), 0);
                 break;
             /*case GET:
                 parse_get(buf, parsed);
