@@ -10,6 +10,7 @@
 #define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
 
 void zero_buffer(char *, int);
+unsigned hash(char *str);
 
 typedef struct {
     char *cmd;

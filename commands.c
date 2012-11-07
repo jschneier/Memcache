@@ -2,7 +2,7 @@
 #include "hash.h"
 
 #define STORED "STORED\r\n"
-#define NOT_STORED "NOT_STORE\r\n"
+#define NOT_STORED "NOT_STORED\r\n"
 #define EXISTS "EXISTS\r\n"
 #define NOT_FOUND "NOT_FOUND\r\n"
 #define BAD_VALUE "BAD_VALUE\r\n"
