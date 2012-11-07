@@ -1,12 +1,9 @@
 #include "memcache.h"
 #include "hash.h"
 
-void store(parsed_text *parsed) {
-    unsigned index = (unsigned) hash(parsed->key) % DBSIZE;
-    printf("%u\n", index);
 }
 /*void store(parsed_text *parsed) {
-    int index = hash(parsed->key) % DBSIZE;
+    unsigned index = hash(parsed->key) % DBSIZE;
 
     if (STR_EQ(parsed->cmd, "set"))
         set(index, parsed);
@@ -20,35 +17,89 @@ void store(parsed_text *parsed) {
     else if (STR_EQ(parsed->cmd, "append"))
         append(index, parsed);
 
+    else if (STR_EQ(parsed->cmd, "prepend"))
+        prepend(index, parsed);
+
+    else
+        cas(index, parsed);
+
 }*/
 
-int set(int index, parsed_text *parsed) {
+static void
+set(int index, parsed_text *parsed) {
 
-    block *new = malloc(sizeof(block));
-    if (new == NULL)
-        return -1;
+    block *cur = database[index];
+    if (cur == NULL)
+        cur = init_block(parsed);
 
-    new->key = parsed->key;
-    new->data = parsed->data;
-    new->next = NULL;
-
-    //first insert at this location
-    if (database[index] == NULL)
-        database[index] = new;
-
-    //hash collision -> linked list
     else {
-        block *current = database[index];
-        //advance to the last place
-        while (current->next != NULL)
-            current = current->next;
-        current->next = new;
-        }
+        //advance to the block before matching key or the end of the list
+        while(cur->next != NULL && cur->next->key != parsed->key)
+            cur = cur->next;
 
-    return 0;
+        cur->next = init_block(parsed);
+    }
 }
 
-int incr(int index, parsed_text *parsed) {
+static void
+add(int index, parsed_text *parsed) {
+
+    block *cur = database[index];
+    if (cur == NULL)
+        cur = init_block(parsed);
+
+    else {
+        //advance to the block before matching key or the end of the list
+        while(cur->next != NULL && cur->next->key != parsed->key)
+            cur = cur->next;
+        
+        //want to store on a key we don't already have, ignore matching keys
+        if (cur->next == NULL)
+            cur->next = init_block(parsed);
+    }
+}
+
+static void
+replace(int index, parsed_text *parsed) {
+
+    block *cur = database[index];
+    if (cur == NULL)
+        ; //only want to store if we already match the key, can't match if first
+
+    else {
+        //advance to the block before matching key or the end of the list
+        while(cur->next != NULL && cur->next->key != parsed->key)
+            cur = cur->next;
+
+        //only want to do replace if we already have that key, if NULL we don't
+        if (cur->next != NULL) {
+            block *temp = cur->next->next //store the next pointer so we don't break up the linked list
+            cur->next = init_block(parsed);
+            cur->next->next = temp;
+            }
+    }
+}
+
+static void
+append(int index, parsed_text *parsed) {
+
+    block *cur = database[index];
+    if (cur == NULL)
+        ; //can't append if key not in hash
+
+    else {
+        //advance to the block before matching key or the end of the list
+        while(cur->next != NULL && cur->next->key != parsed->key)
+            cur = cur->next;
+
+        if (cur->next != NULL) {
+            //TODO
+        }
+    }
+}
+
+static void
+incr(int index, parsed_text *parsed) {
     
     block *current = database[index];
 

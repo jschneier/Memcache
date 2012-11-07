@@ -1,6 +1,6 @@
 /*DJB2 string hashing algorithm*/
 
-unsigned long
+unsigned
 hash (char *str) {
 
     unsigned long hash = 5381;

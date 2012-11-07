@@ -1,1 +1,1 @@
-unsigned long hash(unsigned char *);
+unsigned long hash(char *);
