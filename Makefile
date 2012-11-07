@@ -3,10 +3,10 @@ CFLAGS = -Wall -Wextra
 
 objects = socket.o server.o commands.o parse.o utils.o
 
-memcache: $(objects)
+mem: $(objects)
 	$(CC) $(CFLAGS) -o memcache $(objects)
 
-server.o: memcache.h socket.h utils.h
+server.o: memcache.h socket.h parse.h
 
 socket.o: memcache.h socket.h
 
@@ -14,7 +14,7 @@ commands.o: memcache.h
 
 parse.o: memcache.h
 
-utils.o: utils.h
+utils.o: memcache.h
 
 clean:
-	rm -f *.o memcache
+	rm -f *.o

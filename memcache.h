@@ -6,12 +6,16 @@
 #include <sys/socket.h>
 
 #define BUFSIZE 1024
+
+void zero_buffer(char *, int);
+
 typedef struct {
     char *cmd;
     char *key;
     char *flags;
     unsigned long exptime;
     unsigned long bytes;
+    unsigned long long cas_unique;
     long change;
     bool no_reply;
     char *data;
@@ -23,7 +27,7 @@ typedef struct block {
     char *flags;
     unsigned long exptime;
     unsigned long bytes;
-    unsigned long long cas_uniquie;
+    unsigned long long cas_unique;
     struct block *next;
 } block;
 

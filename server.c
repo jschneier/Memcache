@@ -4,15 +4,13 @@
 
 #include "memcache.h"
 #include "socket.h"
-#include "utils.h"
+#include "parse.h"
 
 #define DBSIZE 2048
 
 void *thread(void *vargp);
 
 block *database[DBSIZE];
-#define BAD_CMD "ERROR\r\n"
-#define BAD_CMD_LEN 7
 
 int main(int argc, char **argv) {
 
@@ -59,18 +57,29 @@ void *thread(void *vargp) {
             }
 
         int cmd = parse_cmd(buf);
+        char *resp;
         switch(cmd) {
             case STORE:
-                parse_store(buf, parsed);
+                resp = parse_store(buf, parsed);
+                if (resp != NULL) {
+                    send(conn_fd, resp, strlen(resp), 0);
+                    zero_buffer(buf, BUFSIZE);
+                    break;
+                }
                 zero_buffer(buf, BUFSIZE);
                 status = recv(conn_fd, buf, BUFSIZE, 0);
                 if (status == -1)
                     fprintf(stderr, "recv error: %s\n", strerror(errno));
-                if (status != parsed->bytes)
-                    fprintf(stderr, "data block size not equal to header value");
+
+                //+2 for \r\n
+                if (status != (parsed->bytes + 2)) {
+                    fprintf(stderr, "data block size not equal to header value\n");
+                    break;
+                    }
+
                 //do thing to actually store
                 break;
-            case GET:
+            /*case GET:
                 parse_get(buf, parsed);
                 break;
             case DEL:
@@ -86,8 +95,9 @@ void *thread(void *vargp) {
                 close(conn_fd);
                 pthread_exit(NULL);
                 break;
+            */
             case ERROR:
-                send(conn_fd, BAD_CMD, BAD_CMD_LEN, 0);
+                send(conn_fd, "ERROR\r\n", 7, 0);
                 break;
         }
         zero_buffer(buf, BUFSIZE);
