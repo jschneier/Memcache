@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 
 #define BUFSIZE 1024
+#define DBSIZE 2048
+#define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
 
 void zero_buffer(char *, int);
 

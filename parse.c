@@ -1,6 +1,5 @@
 #include "memcache.h"
 
-#define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
 #define DELIM " "
 #define NEXT_TOKEN strtok(NULL, DELIM)
 
@@ -40,38 +39,38 @@ char *parse_store(char *buf, parsed_text *parsed) {
 
     cur = NEXT_TOKEN;
     if (cur == NULL)
-        return "CLIENT_ERROR no key received\r\n";
+        return "CLIENT_ERROR: no key received\r\n";
     parsed->key = cur;
 
     cur = NEXT_TOKEN;
     if (cur == NULL)
-        return "CLIENT_ERROR no flags received\r\n";
+        return "CLIENT_ERROR: no flags received\r\n";
     parsed->flags = cur;
 
     cur = NEXT_TOKEN;
     if (cur == NULL)
-        return "CLIENT_ERROR no exptime received\r\n";
+        return "CLIENT_ERROR: no exptime received\r\n";
 
     dat = strtoul(cur, &end, 10);    
     if (*end != '\0') //not all characters were converted
-        return "CLIENT_ERROR not all of exptime converted\r\n";
+        return "CLIENT_ERROR: not all of exptime converted\r\n";
     parsed->exptime = dat;
 
     cur = NEXT_TOKEN;
     if (cur == NULL)
-        return "CLIENT_ERROR no bytes (length) received\r\n";
+        return "CLIENT_ERROR: no bytes (length) received\r\n";
     dat = strtoul(cur, &end, 10);
     if (*end != '\0')
-        return "CLIENT_ERROR not all of bytes converted\r\n";
+        return "CLIENT_ERROR: not all byte chars converted\r\n";
     parsed->bytes = dat;
 
     if (STR_EQ("cas", parsed->cmd)) {
         cur = NEXT_TOKEN;
         if (cur == NULL)
-            return "CLIENT_ERROR didn't received cas unique\r\n";
+            return "CLIENT_ERROR: didn't receive cas unique\r\n";
         unsigned long long cas = strtoull(cur, &end, 10);
         if (*end != '\0')
-            return "CLIENT_ERROR not all of cas unique converted\r\n";
+            return "CLIENT_ERROR: not all of cas unique converted\r\n";
         parsed->cas_unique = cas;
     }
     cur = NEXT_TOKEN;
@@ -84,6 +83,6 @@ char *parse_store(char *buf, parsed_text *parsed) {
         return NULL;
         }
     else
-        return "CLIENT_ERROR too many tokens sent\r\n";
+        return "CLIENT_ERROR: too many tokens sent\r\n";
 
 }

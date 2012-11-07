@@ -6,8 +6,6 @@
 #include "socket.h"
 #include "parse.h"
 
-#define DBSIZE 2048
-
 void *thread(void *vargp);
 
 block *database[DBSIZE];
@@ -77,7 +75,7 @@ void *thread(void *vargp) {
                     break;
                     }
 
-                //do thing to actually store
+                store(parsed);
                 break;
             /*case GET:
                 parse_get(buf, parsed);

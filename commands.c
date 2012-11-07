@@ -1,4 +1,26 @@
 #include "memcache.h"
+#include "hash.h"
+
+void store(parsed_text *parsed) {
+    unsigned index = (unsigned) hash(parsed->key) % DBSIZE;
+    printf("%u\n", index);
+}
+/*void store(parsed_text *parsed) {
+    int index = hash(parsed->key) % DBSIZE;
+
+    if (STR_EQ(parsed->cmd, "set"))
+        set(index, parsed);
+
+    else if (STR_EQ(parsed->cmd, "add"))
+        add(index, parsed);
+
+    else if (STR_EQ(parsed->cmd, "replace"))
+        replace(index, parsed);
+
+    else if (STR_EQ(parsed->cmd, "append"))
+        append(index, parsed);
+
+}*/
 
 int set(int index, parsed_text *parsed) {
 
