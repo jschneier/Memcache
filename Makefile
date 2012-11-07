@@ -17,4 +17,4 @@ parse.o: memcache.h
 utils.o: memcache.h
 
 clean:
-	rm -f *.o
+	rm -f *.o memcache
