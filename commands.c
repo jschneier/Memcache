@@ -126,20 +126,20 @@ append(unsigned index, parsed_text *parsed) {
 static char*
 incr(unsigned index, parsed_text *parsed) {
     
-    block *current = database[index];
+    block *cur = database[index];
 
-    if (current == NULL)
+    if (cur == NULL)
         return NOT_FOUND;
 
-    while (current->key != parsed->key)
-        current = current->next;
+    while (cur->key != parsed->key)
+        cur = cur->next;
 
     //we iterated through and didn't find a match
-    if (current == NULL)
+    if (cur == NULL)
         return NOT_FOUND;
 
     unsigned long long value;
-    int status = sscanf(current->data, "%llu", &value);
+    int status = sscanf(cur->data, "%llu", &value);
 
     //data couldn't be interpreted as an unsigned integer
     if (status == EOF)
