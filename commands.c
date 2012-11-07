@@ -5,6 +5,15 @@
 #define NOT_STORED "NOT_STORE\r\n"
 #define EXISTS "EXISTS\r\n"
 #define NOT_FOUND "NOT_FOUND\r\n"
+#define BAD_VALUE "BAD_VALUE\r\n"
+
+static char *set(unsigned, parsed_text*);
+static char *add(unsigned, parsed_text*);
+static char *replace(unsigned, parsed_text*);
+//static char *prepend(unsigned, parsed_text*);
+static char *append(unsigned, parsed_text*);
+static char *incr(unsigned, parsed_text*);
+static block *init_block(parsed_text*);
 
 char *store(parsed_text *parsed) {
     unsigned index = hash(parsed->key) % DBSIZE;
@@ -21,16 +30,17 @@ char *store(parsed_text *parsed) {
     else if (STR_EQ(parsed->cmd, "append"))
         return append(index, parsed);
 
-    else if (STR_EQ(parsed->cmd, "prepend"))
+    /*else if (STR_EQ(parsed->cmd, "prepend"))
         return prepend(index, parsed);
 
     else
         return cas(index, parsed);
-
+    */
+    return "FOO"; //TODO
 }
 
 static char*
-set(int index, parsed_text *parsed) {
+set(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
@@ -47,7 +57,7 @@ set(int index, parsed_text *parsed) {
 }
 
 static char*
-add(int index, parsed_text *parsed) {
+add(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
@@ -68,7 +78,7 @@ add(int index, parsed_text *parsed) {
 }
 
 static char*
-replace(int index, parsed_text *parsed) {
+replace(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
@@ -81,7 +91,7 @@ replace(int index, parsed_text *parsed) {
 
         //only want to do replace if we already have that key, if NULL we don't
         if (cur->next != NULL) {
-            block *temp = cur->next->next //store the next pointer so we don't break up the linked list
+            block *temp = cur->next->next; //store the next pointer so we don't break up the linked list
             cur->next = init_block(parsed);
             cur->next->next = temp;
             return STORED;
@@ -92,7 +102,7 @@ replace(int index, parsed_text *parsed) {
 }
 
 static char*
-append(int index, parsed_text *parsed) {
+append(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
@@ -104,7 +114,8 @@ append(int index, parsed_text *parsed) {
             cur = cur->next;
 
         if (cur->next != NULL) {
-            //TODO: realloc return STORED
+            //TODO: realloc
+            return STORED;
         }
 
         else
@@ -113,34 +124,34 @@ append(int index, parsed_text *parsed) {
 }
 
 static char*
-incr(int index, parsed_text *parsed) {
+incr(unsigned index, parsed_text *parsed) {
     
     block *current = database[index];
 
     if (current == NULL)
-        return -1;
+        return NOT_FOUND;
 
     while (current->key != parsed->key)
         current = current->next;
 
     //we iterated through and didn't find a match
     if (current == NULL)
-        return -1;
+        return NOT_FOUND;
 
     unsigned long long value;
     int status = sscanf(current->data, "%llu", &value);
 
     //data couldn't be interpreted as an unsigned integer
     if (status == EOF)
-        return -1;
+        return BAD_VALUE;
 
     value += parsed->change;
     //need to use sprintf to convert back for data
 
-    return 0;
+    return "FOO"; //TODO
     }
 
-static block *
+static block*
 init_block(parsed_text *parsed) {
 
     block *ret = malloc(sizeof(block));
