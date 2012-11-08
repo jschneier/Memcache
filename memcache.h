@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <netdb.h>
 #include <errno.h>
 #include <ctype.h>
 #include <string.h>
