@@ -133,3 +133,17 @@ parse_get(char *buf, parsed_text *parsed) {
     //TODO: \r\n
     return NULL
 }
+
+char *
+parse_delete(char *buf, parsed_text *parsed) {
+    char *cur = strtok(buf, DELIM);
+    parsed->cmd = cur;
+
+    cur = NEXT_TOKEN;
+    if (cur == NULL)
+        return "CLIENT_ERROR: no key provided for delete\r\n";
+
+    parsed->key = cur;
+
+    //TODO: no reply
+    return NULL;
