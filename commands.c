@@ -12,6 +12,7 @@ static char *add(unsigned, parsed_text*);
 static char *replace(unsigned, parsed_text*);
 static char *pend(unsigned, parsed_text*);
 static char *incr_decr(unsigned, parsed_text*);
+static char *touch(unsigned, parsed_text*);
 static block *init_block(parsed_text*);
 
 char *
@@ -129,6 +130,23 @@ pend(unsigned index, parsed_text *parsed) {
     return NOT_STORED;
 }
 
+char *
+change(parsed_text *parsed) {
+    unsigned index = hash(parsed->key) % DBSIZE;
+
+    if (STR_EQ(parsed->cmd, "touch"))
+        return touch(index, parsed);
+
+    else
+        return incr_decr(index, parsed);
+}
+
+static char *
+touch(unsigned index, parsed_text *parsed) {
+    block *cur = database[index];
+    return "FOO";
+}
+
 static char *
 incr_decr(unsigned index, parsed_text *parsed) {
 
@@ -173,10 +191,11 @@ incr_decr(unsigned index, parsed_text *parsed) {
     return ret;
 }
 
-char *delete(parsed_text *parsed) {
+char *
+delete(parsed_text *parsed) {
 
     unsigned index = hash(parsed->key) % DBSIZE;
-    cur = database[index];
+    block *cur = database[index];
 
     while(cur->next != NULL && cur->next->key != parsed->key)
         cur = cur->next;
