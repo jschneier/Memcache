@@ -89,19 +89,6 @@ parse_store(char *buf, parsed_text *parsed) {
     }
 
     IS_REPLY()
-    /*
-    cur = NEXT_TOKEN;
-    if (cur == NULL) {
-        parsed->no_reply = false;
-        return NULL;
-    }
-    else if (STR_EQ(cur, "noreply")) {
-        parsed->no_reply = true;
-        return NULL;
-    }
-    else
-        return "CLIENT_ERROR: too many tokens sent\r\n";
-    */
 }
 
 char *
