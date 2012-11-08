@@ -51,7 +51,9 @@ set(unsigned index, parsed_text *parsed) {
         while(cur->next != NULL && cur->next->key != parsed->key)
             cur = cur->next;
 
+        block *temp = cur->next->next;
         cur->next = init_block(parsed);
+        cur->next->next = temp;
     }
     return STORED;
 }
@@ -72,7 +74,9 @@ add(unsigned index, parsed_text *parsed) {
         if (cur->next != NULL)
             return NOT_STORED;
 
+        block *temp = cur->next->next; //store the next pointer so we don't break up the linked list
         cur->next = init_block(parsed);
+        cur->next->next = temp;
     }
     return STORED;
 }
@@ -225,7 +229,6 @@ init_block(parsed_text *parsed) {
     ret->exptime = parsed->exptime;
     ret->bytes = parsed->bytes;
     ret->data = parsed->data;
-    ret->next = NULL;
     //TODO ret->cas_unique
 
     return ret;
