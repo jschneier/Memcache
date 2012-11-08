@@ -85,9 +85,17 @@ void *thread(void *vargp) {
                 break;
             case DEL:
                 parse_del(buf, parsed);
+                resp = delete(parsed);
+
+                if (parsed->no_reply == false)
+                    send(conn_fd, resp, strlen(resp), 0);
                 break;
             case CHANGE:
                 parse_change(buf, parsed);
+                resp = change(parsed);
+
+                if (parsed->no_reply == false)
+                    send(conn_fd, resp, strlen(resp), 0);
                 break;
             /*case STATS:
                 parse_stats(buf, parsed);
