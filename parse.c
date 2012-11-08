@@ -94,7 +94,7 @@ parse_change(char *buf, parsed_text *parsed) {
     char *end; //used in strtoull for error checking
     char *cur = strtok(buf, DELIM);
     unsigned long long val;
-    parsed->cmd = cur; //should never fail if we got this far
+    parsed->cmd = cur;
 
     cur = NEXT_TOKEN;
     if (cur == NULL)
@@ -112,4 +112,24 @@ parse_change(char *buf, parsed_text *parsed) {
 
     //TODO: NO REPLY\r\n
     return NULL;
-    }
+}
+
+char *
+parse_get(char *buf, parsed_text *parsed) {
+    char *cur = strtok(buf, DELIM);
+    parsed->cmd = cur;
+    int i = 0;
+
+    cur = NEXT_TOKEN;
+    if (cur == NULL)
+        return "CLIENT_ERROR: no keys provided in get command\r\n";
+
+    parsed->keys[i] = cur;
+    ++i;
+
+    while (i < MAX_KEYS && ((cur = NEXT_TOKEN) != NULL))
+        parsed->keys[i++] = cur;
+
+    //TODO: \r\n
+    return NULL
+}

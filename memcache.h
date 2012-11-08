@@ -7,6 +7,7 @@
 
 #define BUFSIZE 1024
 #define DBSIZE 2048
+#define MAX_KEYS 10
 #define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
 
 void zero_buffer(char *, int);
@@ -20,6 +21,7 @@ typedef struct {
     unsigned long bytes;
     unsigned long long cas_unique;
     unsigned long long change;
+    char *keys[MAX_KEYS];
     bool no_reply;
     char *data;
 } parsed_text;
