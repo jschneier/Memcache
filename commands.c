@@ -26,9 +26,10 @@ store(parsed_text *parsed) {
     else if (STR_EQ(parsed->cmd, "replace"))
         return replace(index, parsed);
 
-    /*else if (STR_EQ(parsed->cmd, "append") || STR_EQ(parsed->cmd, "prepend"))
+    else if (STR_EQ(parsed->cmd, "append") || STR_EQ(parsed->cmd, "prepend"))
         return pend(index, parsed);
 
+    /*
     else
         return cas(index, parsed);
     */
@@ -97,11 +98,12 @@ replace(unsigned index, parsed_text *parsed) {
     }
 }
 
-/*
 static char *
 pend(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
+    char buf[BUFSIZE];
+
     if (cur == NULL)
         return NOT_STORED; //can't append if key not in hash
 
@@ -113,18 +115,23 @@ pend(unsigned index, parsed_text *parsed) {
         if (cur != NULL) {
 
             if (STR_EQ(parsed->cmd, "append"))
-                cur->data
+                snprintf(buf, BUFSIZE, "%s%s", cur->data, parsed->data);
+            else
+                snprintf(buf, BUFSIZE, "%s%s", parsed->data, cur->data);
+
+            cur->data = buf;
             return STORED;
         }
     }
 
     return NOT_STORED;
-}*/
+}
 
 static char *
 incr_decr(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
+    char *ret;
     char buf[BUFSIZE];
 
     if (cur == NULL)
@@ -160,7 +167,8 @@ incr_decr(unsigned index, parsed_text *parsed) {
     cur->data = buf;
 
     sprintf(buf, "%llu\r\n", value);
-    return buf;
+    ret = buf;
+    return ret;
 }
 
 static block *

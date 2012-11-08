@@ -71,7 +71,7 @@ void *thread(void *vargp) {
                     fprintf(stderr, "recv error: %s\n", strerror(errno));
 
                 //+2 for \r\n
-                if (status != (parsed->bytes + 2)) {
+                if ((unsigned) status != (parsed->bytes + 2)) {
                     fprintf(stderr, "data block size not equal to header value\n");
                     break;
                     }
