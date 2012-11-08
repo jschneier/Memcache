@@ -5,6 +5,7 @@
 #define EXISTS "EXISTS\r\n"
 #define NOT_FOUND "NOT_FOUND\r\n"
 #define BAD_VALUE "BAD_VALUE\r\n"
+#define DELETED "DELETED\r\n"
 
 static char *set(unsigned, parsed_text*);
 static char *add(unsigned, parsed_text*);
@@ -172,10 +173,33 @@ incr_decr(unsigned index, parsed_text *parsed) {
     return ret;
 }
 
+char *delete(parsed_text *parsed) {
+
+    unsigned index = hash(parsed->key) % DBSIZE;
+    cur = database[index];
+
+    while(cur->next != NULL && cur->next->key != parsed->key)
+        cur = cur->next;
+
+    if (cur == NULL)
+        return NOT_FOUND;
+
+    block *temp = cur->next->next;
+    free(cur->next);
+    cur->next = temp;
+
+    return DELETED;
+}
+
 static block *
 init_block(parsed_text *parsed) {
 
     block *ret = malloc(sizeof(block));
+
+    if (ret == NULL) {
+        perror("malloc failed in init_block");
+        exit(1);
+    }
 
     ret->key = parsed->key;
     ret->flags = parsed->flags;
