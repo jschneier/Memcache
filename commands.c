@@ -33,7 +33,8 @@ store(parsed_text *parsed) {
     else
         return cas(index, parsed);
     */
-    return "FOO"; //TODO
+    else
+        return "FOO"; //TODO
 }
 
 static char *
@@ -92,7 +93,7 @@ replace(unsigned index, parsed_text *parsed) {
             cur->next = init_block(parsed);
             cur->next->next = temp;
             return STORED;
-            }
+        }
         else
             return NOT_STORED;
     }

@@ -13,6 +13,7 @@
 
 void zero_buffer(char *, int);
 unsigned hash(char *str);
+void strip_trailing_spaces(char *);
 
 typedef struct {
     char *cmd;

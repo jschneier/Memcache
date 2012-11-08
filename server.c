@@ -11,7 +11,7 @@ void *thread(void *vargp);
 
 block *database[DBSIZE];
 
-int main(int argc, char **argv) {
+int main(void) {
 
     int sock_fd, *conn_fd;
     pthread_t tid;
@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
         if (conn_fd == NULL) {
             perror("malloc error");
             exit(1);
-            }
+        }
         *conn_fd = accept(sock_fd, (struct sockaddr *) &addr, &clientsize);
         pthread_create(&tid, NULL, &thread, conn_fd);
     }
@@ -39,21 +39,22 @@ void *thread(void *vargp) {
     int status, conn_fd;
     conn_fd = *((int *)vargp);
     free(vargp);
-    char buf[BUFSIZE] = {0};
-    parsed_text *parsed = malloc(sizeof(parsed_text));
+    char buf[BUFSIZE];
+    parsed_text *parsed = malloc(sizeof(parsed));
 
     for(;;) {
         status = recv(conn_fd, buf, BUFSIZE, 0);
+        strip_trailing_spaces(buf);
 
         if (status == -1) {
             fprintf(stderr, "recv error: %s\n", strerror(errno));
             close(conn_fd);
             break;
-            }
+        }
         if (status == 0) {
             close(conn_fd);
             break;
-            }
+        }
 
         int cmd = parse_cmd(buf);
         char *resp;
@@ -67,20 +68,20 @@ void *thread(void *vargp) {
                 }
                 zero_buffer(buf, BUFSIZE);
                 status = recv(conn_fd, buf, BUFSIZE, 0);
+                strip_trailing_spaces(buf);
                 if (status == -1)
                     fprintf(stderr, "recv error: %s\n", strerror(errno));
 
-                //+2 for \r\n
-                if ((unsigned) status != (parsed->bytes + 2)) {
+                if ((unsigned) status != parsed->bytes) {
                     fprintf(stderr, "data block size not equal to header value\n");
                     break;
-                    }
+                }
 
                 resp = store(parsed);
                 if (parsed->no_reply == false)
                     send(conn_fd, resp, strlen(resp), 0);
                 break;
-            /*case GET:
+            case GET:
                 parse_get(buf, parsed);
                 break;
             case DEL:
@@ -89,10 +90,9 @@ void *thread(void *vargp) {
             case CHANGE:
                 parse_change(buf, parsed);
                 break;
-            case STATS:
+            /*case STATS:
                 parse_stats(buf, parsed);
-                break;
-            */
+                break;*/
             case QUIT:
                 close(conn_fd);
                 pthread_exit(NULL);
@@ -103,6 +103,8 @@ void *thread(void *vargp) {
         }
         zero_buffer(buf, BUFSIZE);
     }
+
+    free(parsed);
 
     return NULL;
 }

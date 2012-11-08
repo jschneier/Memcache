@@ -18,14 +18,12 @@ hash(char *str) {
     return hash;
 }
 
-char *
-strip_spaces(char *str) {
+void
+strip_trailing_spaces(char *str) {
     int size = strlen(str);
     char *end = str + size - 1;
 
     while(isspace(*end))
         end--;
     *(end + 1) = '\0';
-
-    return str;
 }

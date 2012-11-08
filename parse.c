@@ -2,6 +2,18 @@
 
 #define DELIM " "
 #define NEXT_TOKEN strtok(NULL, DELIM)
+#define IS_REPLY()                                       \
+    cur = NEXT_TOKEN;                                    \
+    if (cur == NULL) {                                   \
+        parsed->no_reply = false;                        \
+        return NULL;                                     \
+    }                                                    \
+    else if (STR_EQ(cur, "noreply")) {                   \
+        parsed->no_reply = true;                         \
+        return NULL;                                     \
+    }                                                    \
+    else                                                 \
+        return "CLIENT_ERROR: too many tokens sent\r\n"; \
 
 int
 parse_cmd(char *buf) {
@@ -75,18 +87,21 @@ parse_store(char *buf, parsed_text *parsed) {
             return "CLIENT_ERROR: not all of cas unique converted\r\n";
         parsed->cas_unique = cas;
     }
+
+    IS_REPLY()
+    /*
     cur = NEXT_TOKEN;
     if (cur == NULL) {
         parsed->no_reply = false;
         return NULL;
-        }
+    }
     else if (STR_EQ(cur, "noreply")) {
         parsed->no_reply = true;
         return NULL;
-        }
+    }
     else
         return "CLIENT_ERROR: too many tokens sent\r\n";
-
+    */
 }
 
 char *
@@ -110,8 +125,7 @@ parse_change(char *buf, parsed_text *parsed) {
         return "CLIENT_ERROR: not all of value converted\r\n";
     parsed->change = val;
 
-    //TODO: NO REPLY\r\n
-    return NULL;
+    IS_REPLY()
 }
 
 char *
@@ -130,12 +144,11 @@ parse_get(char *buf, parsed_text *parsed) {
     while (i < MAX_KEYS && ((cur = NEXT_TOKEN) != NULL))
         parsed->keys[i++] = cur;
 
-    //TODO: \r\n
-    return NULL;
+    IS_REPLY()
 }
 
 char *
-parse_delete(char *buf, parsed_text *parsed) {
+parse_del(char *buf, parsed_text *parsed) {
     char *cur = strtok(buf, DELIM);
     parsed->cmd = cur;
 
@@ -145,6 +158,5 @@ parse_delete(char *buf, parsed_text *parsed) {
 
     parsed->key = cur;
 
-    //TODO: no reply
-    return NULL;
+    IS_REPLY()
 }
