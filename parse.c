@@ -76,7 +76,7 @@ parse_store(char *buf, parsed_text *parsed) {
         parsed->cas_unique = cas;
     }
     cur = NEXT_TOKEN;
-    if (STR_EQ(cur, "\r\n")) {
+    if (cur == NULL) {
         parsed->no_reply = false;
         return NULL;
         }
@@ -131,7 +131,7 @@ parse_get(char *buf, parsed_text *parsed) {
         parsed->keys[i++] = cur;
 
     //TODO: \r\n
-    return NULL
+    return NULL;
 }
 
 char *
@@ -147,3 +147,4 @@ parse_delete(char *buf, parsed_text *parsed) {
 
     //TODO: no reply
     return NULL;
+}

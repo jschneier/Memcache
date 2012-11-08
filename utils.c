@@ -1,4 +1,4 @@
-#include <string.h>
+#include "memcache.h"
 
 void
 zero_buffer(char *buf, int len) {
@@ -16,4 +16,16 @@ hash(char *str) {
         hash = ((hash << 5) + hash) + c;
 
     return hash;
-    }
+}
+
+char *
+strip_spaces(char *str) {
+    int size = strlen(str);
+    char *end = str + size - 1;
+
+    while(isspace(*end))
+        end--;
+    *(end + 1) = '\0';
+
+    return str;
+}
