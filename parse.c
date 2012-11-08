@@ -3,7 +3,8 @@
 #define DELIM " "
 #define NEXT_TOKEN strtok(NULL, DELIM)
 
-int parse_cmd(char *buf) {
+int
+parse_cmd(char *buf) {
     char temp[BUFSIZE];
     strncpy(temp, buf, 10); //10 because maximum command length (prepend) is 7
     char *cmd = strtok(temp, DELIM);
@@ -31,7 +32,8 @@ int parse_cmd(char *buf) {
         return ERROR;
 }
 
-char *parse_store(char *buf, parsed_text *parsed) {
+char *
+parse_store(char *buf, parsed_text *parsed) {
     char *end; //used in strtoul and strtoull for error checking
     char *cur = strtok(buf, DELIM);
     unsigned long dat;
@@ -86,3 +88,28 @@ char *parse_store(char *buf, parsed_text *parsed) {
         return "CLIENT_ERROR: too many tokens sent\r\n";
 
 }
+
+char *
+parse_change(char *buf, parsed_text *parsed) {
+    char *end; //used in strtoull for error checking
+    char *cur = strtok(buf, DELIM);
+    unsigned long long val;
+    parsed->cmd = cur; //should never fail if we got this far
+
+    cur = NEXT_TOKEN;
+    if (cur == NULL)
+        return "CLIENT_ERROR: no key received\r\n";
+    parsed->key = cur;
+
+    cur = NEXT_TOKEN;
+    if (cur == NULL)
+        return "CLIENT_ERROR: didn't receive value\r\n";
+
+    val = strtoull(cur, &end, 10);
+    if (*end != '\0')
+        return "CLIENT_ERROR: not all of value converted\r\n";
+    parsed->change = val;
+
+    //TODO: NO REPLY\r\n
+    return NULL;
+    }

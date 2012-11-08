@@ -19,7 +19,7 @@ typedef struct {
     unsigned long exptime;
     unsigned long bytes;
     unsigned long long cas_unique;
-    long change;
+    unsigned long long change;
     bool no_reply;
     char *data;
 } parsed_text;

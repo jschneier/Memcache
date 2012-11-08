@@ -77,7 +77,7 @@ void *thread(void *vargp) {
                     }
 
                 resp = store(parsed);
-                if (!parsed->no_reply)
+                if (parsed->no_reply == false)
                     send(conn_fd, resp, strlen(resp), 0);
                 break;
             /*case GET:
@@ -92,11 +92,11 @@ void *thread(void *vargp) {
             case STATS:
                 parse_stats(buf, parsed);
                 break;
+            */
             case QUIT:
                 close(conn_fd);
                 pthread_exit(NULL);
                 break;
-            */
             case ERROR:
                 send(conn_fd, "ERROR\r\n", 7, 0);
                 break;

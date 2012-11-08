@@ -1,5 +1,4 @@
 #include "memcache.h"
-#include "hash.h"
 
 #define STORED "STORED\r\n"
 #define NOT_STORED "NOT_STORED\r\n"
@@ -10,12 +9,12 @@
 static char *set(unsigned, parsed_text*);
 static char *add(unsigned, parsed_text*);
 static char *replace(unsigned, parsed_text*);
-//static char *prepend(unsigned, parsed_text*);
-static char *append(unsigned, parsed_text*);
-static char *incr(unsigned, parsed_text*);
+static char *pend(unsigned, parsed_text*);
+static char *incr_decr(unsigned, parsed_text*);
 static block *init_block(parsed_text*);
 
-char *store(parsed_text *parsed) {
+char *
+store(parsed_text *parsed) {
     unsigned index = hash(parsed->key) % DBSIZE;
 
     if (STR_EQ(parsed->cmd, "set"))
@@ -27,11 +26,8 @@ char *store(parsed_text *parsed) {
     else if (STR_EQ(parsed->cmd, "replace"))
         return replace(index, parsed);
 
-    else if (STR_EQ(parsed->cmd, "append"))
-        return append(index, parsed);
-
-    /*else if (STR_EQ(parsed->cmd, "prepend"))
-        return prepend(index, parsed);
+    /*else if (STR_EQ(parsed->cmd, "append") || STR_EQ(parsed->cmd, "prepend"))
+        return pend(index, parsed);
 
     else
         return cas(index, parsed);
@@ -39,7 +35,7 @@ char *store(parsed_text *parsed) {
     return "FOO"; //TODO
 }
 
-static char*
+static char *
 set(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
@@ -56,7 +52,7 @@ set(unsigned index, parsed_text *parsed) {
     return STORED;
 }
 
-static char*
+static char *
 add(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
@@ -77,7 +73,7 @@ add(unsigned index, parsed_text *parsed) {
     return STORED;
 }
 
-static char*
+static char *
 replace(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
@@ -101,8 +97,9 @@ replace(unsigned index, parsed_text *parsed) {
     }
 }
 
-static char*
-append(unsigned index, parsed_text *parsed) {
+/*
+static char *
+pend(unsigned index, parsed_text *parsed) {
 
     block *cur = database[index];
     if (cur == NULL)
@@ -110,23 +107,25 @@ append(unsigned index, parsed_text *parsed) {
 
     else {
         //advance to the block before matching key or the end of the list
-        while(cur->next != NULL && cur->next->key != parsed->key)
+        while(cur != NULL && cur->key != parsed->key)
             cur = cur->next;
 
-        if (cur->next != NULL) {
-            //TODO: realloc
+        if (cur != NULL) {
+
+            if (STR_EQ(parsed->cmd, "append"))
+                cur->data
             return STORED;
         }
-
-        else
-            return NOT_STORED;
     }
-}
 
-static char*
-incr(unsigned index, parsed_text *parsed) {
-    
+    return NOT_STORED;
+}*/
+
+static char *
+incr_decr(unsigned index, parsed_text *parsed) {
+
     block *cur = database[index];
+    char buf[BUFSIZE];
 
     if (cur == NULL)
         return NOT_FOUND;
@@ -145,13 +144,26 @@ incr(unsigned index, parsed_text *parsed) {
     if (status == EOF)
         return BAD_VALUE;
 
-    value += parsed->change;
-    //need to use sprintf to convert back for data
+    if (STR_EQ(parsed->cmd, "decr")) {
+        if (parsed->change > value)
+            value = 0;
 
-    return "FOO"; //TODO
+        else
+            value -= parsed->change;
+    }
+    //incr
+    else {
+        value += parsed->change;
     }
 
-static block*
+    sprintf(buf, "%llu", value);
+    cur->data = buf;
+
+    sprintf(buf, "%llu\r\n", value);
+    return buf;
+}
+
+static block *
 init_block(parsed_text *parsed) {
 
     block *ret = malloc(sizeof(block));
