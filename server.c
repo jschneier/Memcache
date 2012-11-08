@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
 
