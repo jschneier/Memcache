@@ -16,7 +16,8 @@
         return "CLIENT_ERROR: too many tokens sent\r\n"; \
 
 int
-parse_cmd(char *buf) {
+parse_cmd(char *buf)
+{
     char temp[BUFSIZE];
     strncpy(temp, buf, 10); //10 because maximum command length (prepend) is 7
     char *cmd = strtok(temp, DELIM);
@@ -45,7 +46,8 @@ parse_cmd(char *buf) {
 }
 
 char *
-parse_store(char *buf, parsed_text *parsed) {
+parse_store(char *buf, parsed_text *parsed)
+{
     char *end; //used in strtoul and strtoull for error checking
     char *cur = strtok(buf, DELIM);
     unsigned long dat;
@@ -92,7 +94,8 @@ parse_store(char *buf, parsed_text *parsed) {
 }
 
 char *
-parse_change(char *buf, parsed_text *parsed) {
+parse_change(char *buf, parsed_text *parsed)
+{
     char *end; //used in strtoull for error checking
     char *cur = strtok(buf, DELIM);
     unsigned long long val;
@@ -116,7 +119,8 @@ parse_change(char *buf, parsed_text *parsed) {
 }
 
 char *
-parse_get(char *buf, parsed_text *parsed) {
+parse_get(char *buf, parsed_text *parsed)
+{
     char *cur = strtok(buf, DELIM);
     parsed->cmd = cur;
     int i = 0;
@@ -135,7 +139,8 @@ parse_get(char *buf, parsed_text *parsed) {
 }
 
 char *
-parse_del(char *buf, parsed_text *parsed) {
+parse_del(char *buf, parsed_text *parsed)
+{
     char *cur = strtok(buf, DELIM);
     parsed->cmd = cur;
 

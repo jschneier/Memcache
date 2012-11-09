@@ -1,13 +1,15 @@
 #include "memcache.h"
 
 void
-zero_buffer(char *buf, int len) {
+zero_buffer(char *buf, int len)
+{
     memset(buf, 0, len);
 }
 
 /*DJB2 string hashing algorithm*/
 unsigned
-hash(char *str) {
+hash(char *str)
+{
 
     unsigned long hash = 5381;
     int c;
@@ -19,7 +21,8 @@ hash(char *str) {
 }
 
 void
-strip_trailing_spaces(char *str) {
+strip_trailing_spaces(char *str)
+{
     int size = strlen(str);
     char *end = str + size - 1;
 

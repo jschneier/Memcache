@@ -16,7 +16,8 @@ static char *touch(unsigned, parsed_text*);
 static block *init_block(parsed_text*);
 
 char *
-store(parsed_text *parsed) {
+store(parsed_text *parsed)
+{
     unsigned index = hash(parsed->key) % DBSIZE;
 
     if (STR_EQ(parsed->cmd, "set"))
@@ -40,7 +41,8 @@ store(parsed_text *parsed) {
 }
 
 static char *
-set(unsigned index, parsed_text *parsed) {
+set(unsigned index, parsed_text *parsed)
+{
 
     block *cur = database[index];
     if (cur == NULL)
@@ -59,7 +61,8 @@ set(unsigned index, parsed_text *parsed) {
 }
 
 static char *
-add(unsigned index, parsed_text *parsed) {
+add(unsigned index, parsed_text *parsed)
+{
 
     block *cur = database[index];
     if (cur == NULL)
@@ -82,7 +85,8 @@ add(unsigned index, parsed_text *parsed) {
 }
 
 static char *
-replace(unsigned index, parsed_text *parsed) {
+replace(unsigned index, parsed_text *parsed)
+{
 
     block *cur = database[index];
     if (cur == NULL)
@@ -106,7 +110,8 @@ replace(unsigned index, parsed_text *parsed) {
 }
 
 static char *
-pend(unsigned index, parsed_text *parsed) {
+pend(unsigned index, parsed_text *parsed)
+{
 
     block *cur = database[index];
     char buf[BUFSIZE];
@@ -135,7 +140,8 @@ pend(unsigned index, parsed_text *parsed) {
 }
 
 char *
-change(parsed_text *parsed) {
+change(parsed_text *parsed)
+{
     unsigned index = hash(parsed->key) % DBSIZE;
 
     if (STR_EQ(parsed->cmd, "touch"))
@@ -146,13 +152,15 @@ change(parsed_text *parsed) {
 }
 
 static char *
-touch(unsigned index, parsed_text *parsed) {
+touch(unsigned index, parsed_text *parsed)
+{
     block *cur = database[index];
     return "FOO";
 }
 
 static char *
-incr_decr(unsigned index, parsed_text *parsed) {
+incr_decr(unsigned index, parsed_text *parsed)
+{
 
     block *cur = database[index];
     char *ret;
@@ -196,7 +204,8 @@ incr_decr(unsigned index, parsed_text *parsed) {
 }
 
 char *
-delete(parsed_text *parsed) {
+delete(parsed_text *parsed)
+{
 
     unsigned index = hash(parsed->key) % DBSIZE;
     block *cur = database[index];
@@ -215,7 +224,8 @@ delete(parsed_text *parsed) {
 }
 
 static block *
-init_block(parsed_text *parsed) {
+init_block(parsed_text *parsed)
+{
 
     block *ret = malloc(sizeof(block));
 
