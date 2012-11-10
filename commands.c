@@ -53,9 +53,9 @@ set(unsigned index, parsed_text *parsed)
         while(cur->next != NULL && cur->next->key != parsed->key)
             cur = cur->next;
 
-        block *temp = cur->next->next;
+        block *tmp = cur->next->next;
         cur->next = init_block(parsed);
-        cur->next->next = temp;
+        cur->next->next = tmp;
     }
     return STORED;
 }
@@ -77,9 +77,9 @@ add(unsigned index, parsed_text *parsed)
         if (cur->next != NULL)
             return NOT_STORED;
 
-        block *temp = cur->next->next; //store the next pointer so we don't break up the linked list
+        block *tmp = cur->next->next; //store the next pointer so we don't break up the linked list
         cur->next = init_block(parsed);
-        cur->next->next = temp;
+        cur->next->next = tmp;
     }
     return STORED;
 }
@@ -99,9 +99,9 @@ replace(unsigned index, parsed_text *parsed)
 
         //only want to do replace if we already have that key, if NULL we don't
         if (cur->next != NULL) {
-            block *temp = cur->next->next; //store the next pointer so we don't break up the linked list
+            block *tmp = cur->next->next; //store the next pointer so we don't break up the linked list
             cur->next = init_block(parsed);
-            cur->next->next = temp;
+            cur->next->next = tmp;
             return STORED;
         }
         else
@@ -176,7 +176,7 @@ incr_decr(unsigned index, parsed_text *parsed)
     if (cur == NULL)
         return NOT_FOUND;
 
-    unsigned long long value;
+    uint64_t value;
     int status = sscanf(cur->data, "%llu", &value);
 
     //data couldn't be interpreted as an unsigned integer
@@ -216,9 +216,9 @@ delete(parsed_text *parsed)
     if (cur == NULL)
         return NOT_FOUND;
 
-    block *temp = cur->next->next;
+    block *tmp = cur->next->next;
     free(cur->next);
-    cur->next = temp;
+    cur->next = tmp;
 
     return DELETED;
 }

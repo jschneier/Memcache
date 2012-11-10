@@ -18,9 +18,9 @@
 int
 parse_cmd(char *buf)
 {
-    char temp[BUFSIZE];
-    strncpy(temp, buf, 10); //10 because maximum command length (prepend) is 7
-    char *cmd = strtok(temp, DELIM);
+    char tmp[BUFSIZE];
+    strncpy(tmp, buf, 10); //10 because maximum command length (prepend) is 7
+    char *cmd = strtok(tmp, DELIM);
 
     if (STR_EQ(cmd, "set") || STR_EQ(cmd, "add") || STR_EQ(cmd, "replace") ||
             STR_EQ(cmd, "append") || STR_EQ(cmd, "prepend") || STR_EQ(cmd, "cas"))
@@ -84,7 +84,7 @@ parse_store(char *buf, parsed_text *parsed)
         cur = NEXT_TOKEN;
         if (cur == NULL)
             return "CLIENT_ERROR: didn't receive cas unique\r\n";
-        unsigned long long cas = strtoull(cur, &end, 10);
+        uint64_t cas = strtoull(cur, &end, 10);
         if (*end != '\0')
             return "CLIENT_ERROR: not all of cas unique converted\r\n";
         parsed->cas_unique = cas;
@@ -98,7 +98,7 @@ parse_change(char *buf, parsed_text *parsed)
 {
     char *end; //used in strtoull for error checking
     char *cur = strtok(buf, DELIM);
-    unsigned long long val;
+    uint64_t val;
     parsed->cmd = cur;
 
     cur = NEXT_TOKEN;

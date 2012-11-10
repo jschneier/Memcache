@@ -23,8 +23,8 @@ typedef struct {
     char *flags;
     unsigned long exptime;
     unsigned long bytes;
-    unsigned long long cas_unique;
-    unsigned long long change;
+    uint64_t cas_unique;
+    uint64_t change;
     char *keys[MAX_KEYS];
     bool no_reply;
     char *data;
@@ -36,7 +36,7 @@ typedef struct block {
     char *flags;
     unsigned long exptime;
     unsigned long bytes;
-    unsigned long long cas_unique;
+    uint64_t cas_unique;
     struct block *next;
 } block;
 

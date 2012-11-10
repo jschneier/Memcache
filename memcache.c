@@ -40,55 +40,55 @@ thread(void *vargp)
         int cmd = parse_cmd(buf);
         char *resp;
         switch(cmd) {
-            case STORE:
-                resp = parse_store(buf, parsed);
-                if (resp != NULL) {
-                    send(conn_fd, resp, strlen(resp), 0);
-                    zero_buffer(buf, BUFSIZE);
-                    break;
-                }
+        case STORE:
+            resp = parse_store(buf, parsed);
+            if (resp != NULL) {
+                send(conn_fd, resp, strlen(resp), 0);
                 zero_buffer(buf, BUFSIZE);
-                status = recv(conn_fd, buf, BUFSIZE, 0);
-                strip_trailing_spaces(buf);
-                if (status == -1)
-                    fprintf(stderr, "recv error: %s\n", strerror(errno));
+                break;
+            }
+            zero_buffer(buf, BUFSIZE);
+            status = recv(conn_fd, buf, BUFSIZE, 0);
+            strip_trailing_spaces(buf);
+            if (status == -1)
+                fprintf(stderr, "recv error: %s\n", strerror(errno));
 
-                if ((unsigned) status != parsed->bytes) {
-                    fprintf(stderr, "data block size not equal to header value\n");
-                    break;
-                }
+            if ((unsigned) status != parsed->bytes) {
+                fprintf(stderr, "data block size not equal to header value\n");
+                break;
+            }
 
-                resp = store(parsed);
-                if (parsed->no_reply == false)
-                    send(conn_fd, resp, strlen(resp), 0);
-                break;
-            case GET:
-                parse_get(buf, parsed);
-                break;
-            case DEL:
-                parse_del(buf, parsed);
-                resp = delete(parsed);
+            resp = store(parsed);
+            if (parsed->no_reply == false)
+                send(conn_fd, resp, strlen(resp), 0);
+            break;
+        case GET:
+            parse_get(buf, parsed);
+            break;
+        case DEL:
+            parse_del(buf, parsed);
+            resp = delete(parsed);
 
-                if (parsed->no_reply == false)
-                    send(conn_fd, resp, strlen(resp), 0);
-                break;
-            case CHANGE:
-                parse_change(buf, parsed);
-                resp = change(parsed);
+            if (parsed->no_reply == false)
+                send(conn_fd, resp, strlen(resp), 0);
+            break;
+        case CHANGE:
+            parse_change(buf, parsed);
+            resp = change(parsed);
 
-                if (parsed->no_reply == false)
-                    send(conn_fd, resp, strlen(resp), 0);
-                break;
-            /*case STATS:
-                parse_stats(buf, parsed);
-                break;*/
-            case QUIT:
-                close(conn_fd);
-                pthread_exit(NULL);
-                break;
-            case ERROR:
-                send(conn_fd, "ERROR\r\n", 7, 0);
-                break;
+            if (parsed->no_reply == false)
+                send(conn_fd, resp, strlen(resp), 0);
+            break;
+        /*case STATS:
+            parse_stats(buf, parsed);
+            break;*/
+        case QUIT:
+            close(conn_fd);
+            pthread_exit(NULL);
+            break;
+        case ERROR:
+            send(conn_fd, "ERROR\r\n", 7, 0);
+            break;
         }
         zero_buffer(buf, BUFSIZE);
     }
