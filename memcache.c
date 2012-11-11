@@ -25,7 +25,7 @@ thread(void *vargp)
 
     for(;;) {
         status = recv(conn_fd, buf, BUFSIZE, 0);
-        strip_trailing_spaces(buf);
+        strip_n_trailing_spaces(buf, 2);
 
         if (status == -1) {
             fprintf(stderr, "recv error: %s\n", strerror(errno));
@@ -49,7 +49,7 @@ thread(void *vargp)
             }
             zero_buffer(buf, BUFSIZE);
             status = recv(conn_fd, buf, BUFSIZE, 0);
-            strip_trailing_spaces(buf);
+            strip_n_trailing_spaces(buf, 2);
             if (status == -1)
                 fprintf(stderr, "recv error: %s\n", strerror(errno));
 

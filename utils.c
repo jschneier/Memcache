@@ -21,12 +21,17 @@ hash(char *str)
 }
 
 void
-strip_trailing_spaces(char *str)
+strip_n_trailing_spaces(char *str, int n)
 {
     int size = strlen(str);
     char *end = str + size - 1;
+    int i;
 
-    while(isspace(*end))
-        end--;
-    *(end + 1) = '\0';
+    for(i=0; i<n; i++) {
+        if (!isspace(*end))
+            break;
+        else
+            end--;
+    }
+
 }

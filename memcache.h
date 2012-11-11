@@ -15,7 +15,7 @@
 
 void zero_buffer(char *, int);
 unsigned hash(char *str);
-void strip_trailing_spaces(char *);
+void strip_n_trailing_spaces(char *, int);
 
 typedef struct {
     char *cmd;
