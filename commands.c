@@ -223,6 +223,29 @@ delete(parsed_text *parsed)
     return DELETED;
 }
 
+void
+get(parsed_text *parsed, char *messages[MAX_KEYS][2])
+{
+
+    int i;
+    block *cur;
+    char *key;
+
+    for(i=0; i<MAX_KEYS; i++) {
+        key = parsed->keys[i];
+        cur = database[hash(key) % DBSIZE];
+        while(cur != NULL && cur->key != key)
+            cur = cur->next;
+        if(cur == NULL)
+            continue;
+        else {
+            sprintf(messages[i][0], "VALUE %s %s %lu\r\n", key, cur->flags, cur->bytes);
+            sprintf(messages[i][1], "%s\r\n", cur->data);
+        }
+    }
+
+}
+
 static block *
 init_block(parsed_text *parsed)
 {

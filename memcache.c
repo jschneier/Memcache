@@ -38,7 +38,8 @@ thread(void *vargp)
         }
 
         int cmd = parse_cmd(buf);
-        char *resp;
+        char *resp, *messages[MAX_KEYS][2];
+        int i;
         switch(cmd) {
         case STORE:
             resp = parse_store(buf, parsed);
@@ -51,7 +52,7 @@ thread(void *vargp)
             status = recv(conn_fd, buf, BUFSIZE, 0);
             strip_n_trailing_spaces(buf, 2);
             if (status == -1)
-                fprintf(stderr, "recv error: %s\n", strerror(errno));
+                //fprintf(stderr, "recv error: %s\n", strerror(errno));
 
             if ((unsigned) status != parsed->bytes) {
                 fprintf(stderr, "data block size not equal to header value\n");
@@ -64,6 +65,16 @@ thread(void *vargp)
             break;
         case GET:
             parse_get(buf, parsed);
+            get(parsed, messages);
+            for(i=0; i<MAX_KEYS; ++i) {
+                if(messages[i] == NULL)
+                    break;
+                else{
+                    send(conn_fd, messages[i][0], strlen(messages[i][0]), 0);
+                    send(conn_fd, messages[i][1], strlen(messages[i][1]), 0);
+                }
+            }
+            send(conn_fd, "END\r\n", 5, 0);
             break;
         case DEL:
             parse_del(buf, parsed);
@@ -121,7 +132,7 @@ init_socket(void)
     if (listen(sock_fd, BACKLOG) == -1)
         return -1;
     
-    return 0;
+    return sock_fd;
 }
 
 int
@@ -133,7 +144,7 @@ main(void)
     struct sockaddr_storage addr;
     socklen_t clientsize = sizeof(addr);
 
-    if ((sock_fd = init_socket()) != 0)
+    if ((sock_fd = init_socket()) == -1)
         perror("Error returned in init_socket");
 
     for(;;) {

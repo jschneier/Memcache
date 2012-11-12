@@ -28,10 +28,10 @@ strip_n_trailing_spaces(char *str, int n)
     int i;
 
     for(i=0; i<n; i++) {
-        if (!isspace(*end))
-            break;
-        else
+        if (isspace(*end))
             end--;
+        else
+            break;
     }
 
 }
