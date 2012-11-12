@@ -1,12 +1,7 @@
-#include <stdio.h>
-
-#include "minunit.h"
-#include "memcache.h"
+#include "tests.h"
 #include "parse.h"
 
-int tests_run = 0;
-
-static char *test_cmd() {
+char *test_cmd() {
     int resp;
     resp = parse_cmd("set foo");
     mu_assert("\"set foo\" != STORE", resp == STORE);
@@ -44,20 +39,4 @@ static char *test_cmd() {
     resp = parse_cmd("");
     mu_assert("\"\" != ERROR", resp == ERROR);
     return 0;
-}
-
-static char *all_tests() {
-    mu_run_test(test_cmd);
-    return 0;
-}
-
-int main(int argc, char **argv) {
-    char *result = all_tests();
-    if (result != 0)
-        printf("%s\n", result);
-    else
-        printf("ALL TESTS PASS\n");
-    printf("Tests run: %d\n", tests_run);
-
-    return result != 0;
 }
