@@ -33,5 +33,5 @@ strip_n_trailing_spaces(char *str, int n)
         else
             break;
     }
-
+    *end = '\0';
 }
