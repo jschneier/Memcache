@@ -22,6 +22,9 @@ parse_cmd(char *buf)
     strncpy(tmp, buf, 10); //10 because maximum command length (prepend) is 7
     char *cmd = strtok(tmp, DELIM);
 
+    if (cmd == NULL)
+        return ERROR;
+
     if (STR_EQ(cmd, "set") || STR_EQ(cmd, "add") || STR_EQ(cmd, "replace") ||
             STR_EQ(cmd, "append") || STR_EQ(cmd, "prepend") || STR_EQ(cmd, "cas"))
         return STORE;
