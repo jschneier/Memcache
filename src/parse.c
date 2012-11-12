@@ -64,7 +64,11 @@ parse_store(char *buf, parsed_text *parsed)
     cur = NEXT_TOKEN;
     if (cur == NULL)
         return "CLIENT_ERROR: no flags received\r\n";
-    parsed->flags = cur;
+
+    dat = strtol(cur, &end, 10);
+    if(*end != '\0')
+        return "CLIENT_ERROR: not all of flags converted\r\n";
+    parsed->flags = dat;
 
     cur = NEXT_TOKEN;
     if (cur == NULL)

@@ -5,6 +5,10 @@ int tests_run = 0;
 
 static char *all_tests() {
     mu_run_test(test_cmd);
+    mu_run_test(test_parse_store);
+    mu_run_test(test_parse_change);
+    mu_run_test(test_parse_get);
+    mu_run_test(test_parse_del);
     return 0;
 }
 

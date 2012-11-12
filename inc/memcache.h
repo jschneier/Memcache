@@ -20,7 +20,7 @@ void strip_n_trailing_spaces(char *, int);
 typedef struct {
     char *cmd;
     char *key;
-    char *flags;
+    unsigned long flags;
     unsigned long exptime;
     unsigned long bytes;
     uint64_t cas_unique;
