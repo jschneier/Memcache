@@ -45,10 +45,10 @@ thread(void *vargp)
             resp = parse_store(buf, parsed);
             if (resp != NULL) {
                 send(conn_fd, resp, strlen(resp), 0);
-                zero_buffer(buf, BUFSIZE);
+                bzero(buf, BUFSIZE);
                 break;
             }
-            zero_buffer(buf, BUFSIZE);
+            bzero(buf, BUFSIZE);
             status = recv(conn_fd, buf, BUFSIZE, 0);
             strip_n_trailing_spaces(buf, 2);
             if (status == -1)
@@ -101,7 +101,7 @@ thread(void *vargp)
             send(conn_fd, "ERROR\r\n", 7, 0);
             break;
         }
-        zero_buffer(buf, BUFSIZE);
+        bzero(buf, BUFSIZE);
     }
 
     free(parsed);

@@ -5,3 +5,4 @@ char *test_parse_store(void);
 char *test_parse_change(void);
 char *test_parse_get(void);
 char *test_parse_del(void);
+char *test_set(void);

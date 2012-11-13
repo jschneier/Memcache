@@ -13,7 +13,6 @@
 #define MAX_KEYS 10
 #define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
 
-void zero_buffer(char *, int);
 unsigned hash(char *str);
 void strip_n_trailing_spaces(char *, int);
 
@@ -33,7 +32,7 @@ typedef struct {
 typedef struct block {
     char *key;
     char *data;
-    char *flags;
+    unsigned long flags;
     unsigned long exptime;
     unsigned long bytes;
     uint64_t cas_unique;

@@ -1,11 +1,5 @@
 #include "memcache.h"
 
-void
-zero_buffer(char *buf, int len)
-{
-    memset(buf, 0, len);
-}
-
 /*DJB2 string hashing algorithm*/
 unsigned
 hash(char *str)

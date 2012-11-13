@@ -16,6 +16,9 @@ tests.o: test/tests.h test/tests.c
 test_parse.o: inc/parse.h test/tests.h test/test_parse.c
 	$(CC) $(CFLAGS) -I inc -c test/test_parse.c
 
+test_commands.o: inc/commands.h test/tests.h test/test_commands.c
+	$(CC) $(CFLAGS) -I inc -c test/test_commands.c
+
 memcache.o: inc/parse.h inc/commands.h inc/memcache.h src/memcache.c
 	$(CC) $(CFLAGS) -I inc -c src/memcache.c
 
