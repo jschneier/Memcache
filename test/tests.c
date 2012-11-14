@@ -9,7 +9,6 @@ static char *all_tests() {
     mu_run_test(test_parse_change);
     mu_run_test(test_parse_get);
     mu_run_test(test_parse_del);
-    mu_run_test(test_set);
     return 0;
 }
 

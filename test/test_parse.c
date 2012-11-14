@@ -1,7 +1,10 @@
 #include "tests.h"
 #include "parse.h"
 
-char *test_cmd() {
+static void prime_buf(char *, char *);
+
+char *test_cmd()
+{
     int resp;
     resp = parse_cmd("set foo");
     mu_assert("set foo != STORE", resp == STORE);
@@ -42,145 +45,133 @@ char *test_cmd() {
     return 0;
 }
 
-char *test_parse_store() {
+char *test_parse_store()
+{
     char *resp, buf[BUFSIZE];
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
-    sprintf(buf, "%s", "set");
+    prime_buf(buf, "set");
     resp = parse_store(buf, parsed);
     mu_assert("set != key_error", STR_EQ(resp, "CLIENT_ERROR: no key received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set ");
+    prime_buf(buf, "set ");
     resp = parse_store(buf, parsed);
     mu_assert("set[space] != key_error", STR_EQ(resp, "CLIENT_ERROR: no key received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo");
+    prime_buf(buf, "set foo");
     resp = parse_store(buf, parsed);
     mu_assert("set foo != flags error", STR_EQ(resp, "CLIENT_ERROR: no flags received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 14hi");
+    prime_buf(buf, "set foo 14hi");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: not all of flags converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo bar");
+    prime_buf(buf, "set foo bar");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: not all of flags converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17");
+    prime_buf(buf, "set foo 17");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 != no exptime error", STR_EQ(resp, "CLIENT_ERROR: no exptime received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 bar");
+    prime_buf(buf, "set foo 17 bar");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 bar != exptime convert error", STR_EQ(resp, "CLIENT_ERROR: not all of exptime converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12ar");
+    prime_buf(buf, "set foo 17 12ar");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12ar != exptime convert error", STR_EQ(resp, "CLIENT_ERROR: not all of exptime converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12");
+    prime_buf(buf, "set foo 17 12");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 != bytes error", STR_EQ(resp, "CLIENT_ERROR: no bytes (length) received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12 bar");
+    prime_buf(buf, "set foo 17 12 bar");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 bar != bytes error", STR_EQ(resp, "CLIENT_ERROR: not all byte chars converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12 14ar");
+    prime_buf(buf, "set foo 17 12 14ar");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 14ar != bytes error", STR_EQ(resp, "CLIENT_ERROR: not all byte chars converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12 14");
+    prime_buf(buf, "set foo 17 12 14");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 14 != NULL", (resp == NULL) && (!parsed->no_reply));
-    memset(buf, 0, BUFSIZE);
     
-    sprintf(buf, "%s", "set foo 17 12 14 noreply");
+    prime_buf(buf, "set foo 17 12 14 noreply");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 14 noreply != NULL", ((resp == NULL) && parsed->no_reply));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "set foo 17 12 14 foo");
+    prime_buf(buf, "set foo 17 12 14 foo");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 14 foo != tokens error", STR_EQ(resp, "CLIENT_ERROR: too many tokens sent\r\n"));
-    memset(buf, 0, BUFSIZE);
 
     return 0;
 }
 
-char *test_parse_change() {
+char *test_parse_change()
+{
     char *resp, buf[BUFSIZE];
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
-    sprintf(buf, "%s", "incr");
+    prime_buf(buf, "incr");
     resp = parse_change(buf, parsed);
     mu_assert("incr != key error", STR_EQ(resp, "CLIENT_ERROR: no key received\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "incr foo");
+    prime_buf(buf, "incr foo");
     resp = parse_change(buf, parsed);
     mu_assert("incr foo != receive value error", STR_EQ(resp, "CLIENT_ERROR: didn't receive value\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "incr foo bar");
+    prime_buf(buf, "incr foo bar");
     resp = parse_change(buf, parsed);
     mu_assert("incr foo bar != convert error", STR_EQ(resp, "CLIENT_ERROR: not all of value converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "incr foo 14ar");
+    prime_buf(buf, "incr foo 14ar");
     resp = parse_change(buf, parsed);
     mu_assert("incr foo 14ar != convert error", STR_EQ(resp, "CLIENT_ERROR: not all of value converted\r\n"));
-    memset(buf, 0, BUFSIZE);
 
     return 0;
 }
 
-char *test_parse_get() {
+char *test_parse_get()
+{
     char *resp, buf[BUFSIZE];
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
-    sprintf(buf, "%s", "get");
+    prime_buf(buf, "get");
     resp = parse_get(buf, parsed);
     mu_assert("get != keys provided error", STR_EQ(resp, "CLIENT_ERROR: no keys provided in get command\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "get foo");
+    prime_buf(buf, "get foo");
     resp = parse_get(buf, parsed);
     mu_assert("get foo != NULL", ((resp == NULL) && STR_EQ("foo", parsed->keys[0])));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "gets foo bar");
+    prime_buf(buf, "gets foo bar");
     resp = parse_get(buf, parsed);
     mu_assert("get foo bar != NULL", ((resp == NULL) && STR_EQ("foo", parsed->keys[0]) && STR_EQ("bar", parsed->keys[1])));
-    memset(buf, 0, BUFSIZE);
 
     return 0;
 }
 
-char *test_parse_del() {
+char *test_parse_del()
+{
     char *resp, buf[BUFSIZE];
     parsed_text *parsed = malloc(sizeof(parsed_text));
 
-    sprintf(buf, "%s", "delete");
+    prime_buf(buf, "delete");
     resp = parse_del(buf, parsed);
     mu_assert("delete != key error", STR_EQ(resp, "CLIENT_ERROR: no key provided for delete\r\n"));
-    memset(buf, 0, BUFSIZE);
 
-    sprintf(buf, "%s", "delete foo");
+    prime_buf(buf, "delete foo");
     resp = parse_del(buf, parsed);
     mu_assert("delete foo != NULL", ((resp == NULL) && STR_EQ("foo", parsed->key)));
-    memset(buf, 0, BUFSIZE);
 
     return 0;
+}
+
+static void
+prime_buf(char *buf, char *msg)
+{
+    bzero(buf, BUFSIZE);
+    sprintf(buf, "%s", msg);
 }

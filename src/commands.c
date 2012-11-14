@@ -239,7 +239,7 @@ get(parsed_text *parsed, char *messages[MAX_KEYS][2])
         if(cur == NULL)
             continue;
         else {
-            sprintf(messages[i][0], "VALUE %s %s %lu\r\n", key, cur->flags, cur->bytes);
+            sprintf(messages[i][0], "VALUE %s %lu %lu\r\n", key, cur->flags, cur->bytes);
             sprintf(messages[i][1], "%s\r\n", cur->data);
         }
     }
