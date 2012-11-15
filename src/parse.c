@@ -67,7 +67,7 @@ parse_store(char *buf, parsed_text *parsed)
 
     dat = strtol(cur, &end, 10);
     if(*end != '\0')
-        return "CLIENT_ERROR: not all of flags converted\r\n";
+        return "CLIENT_ERROR: flags not number\r\n";
     parsed->flags = dat;
 
     cur = NEXT_TOKEN;
@@ -76,7 +76,7 @@ parse_store(char *buf, parsed_text *parsed)
 
     dat = strtoul(cur, &end, 10);    
     if (*end != '\0') //not all characters were converted
-        return "CLIENT_ERROR: not all of exptime converted\r\n";
+        return "CLIENT_ERROR: exptime not number\r\n";
     parsed->exptime = dat;
 
     cur = NEXT_TOKEN;
@@ -84,7 +84,7 @@ parse_store(char *buf, parsed_text *parsed)
         return "CLIENT_ERROR: no bytes (length) received\r\n";
     dat = strtoul(cur, &end, 10);
     if (*end != '\0')
-        return "CLIENT_ERROR: not all byte chars converted\r\n";
+        return "CLIENT_ERROR: bytes not number\r\n";
     parsed->bytes = dat;
 
     if (STR_EQ("cas", parsed->cmd)) {
@@ -93,7 +93,7 @@ parse_store(char *buf, parsed_text *parsed)
             return "CLIENT_ERROR: didn't receive cas unique\r\n";
         uint64_t cas = strtoull(cur, &end, 10);
         if (*end != '\0')
-            return "CLIENT_ERROR: not all of cas unique converted\r\n";
+            return "CLIENT_ERROR: cas unique not number\r\n";
         parsed->cas_unique = cas;
     }
 
@@ -119,7 +119,7 @@ parse_change(char *buf, parsed_text *parsed)
 
     val = strtoull(cur, &end, 10);
     if (*end != '\0')
-        return "CLIENT_ERROR: not all of value converted\r\n";
+        return "CLIENT_ERROR: value not number\r\n";
     parsed->change = val;
 
     IS_REPLY()

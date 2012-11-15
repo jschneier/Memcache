@@ -64,11 +64,11 @@ char *test_parse_store()
 
     prime_buf(buf, "set foo 14hi");
     resp = parse_store(buf, parsed);
-    mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: not all of flags converted\r\n"));
+    mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: flags not number\r\n"));
 
     prime_buf(buf, "set foo bar");
     resp = parse_store(buf, parsed);
-    mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: not all of flags converted\r\n"));
+    mu_assert("set foo 14hi != flag convert error", STR_EQ(resp, "CLIENT_ERROR: flags not number\r\n"));
 
     prime_buf(buf, "set foo 17");
     resp = parse_store(buf, parsed);
@@ -76,23 +76,15 @@ char *test_parse_store()
 
     prime_buf(buf, "set foo 17 bar");
     resp = parse_store(buf, parsed);
-    mu_assert("set foo 17 bar != exptime convert error", STR_EQ(resp, "CLIENT_ERROR: not all of exptime converted\r\n"));
-
-    prime_buf(buf, "set foo 17 12ar");
-    resp = parse_store(buf, parsed);
-    mu_assert("set foo 17 12ar != exptime convert error", STR_EQ(resp, "CLIENT_ERROR: not all of exptime converted\r\n"));
+    mu_assert("set foo 17 bar != exptime convert error", STR_EQ(resp, "CLIENT_ERROR: exptime not number\r\n"));
 
     prime_buf(buf, "set foo 17 12");
     resp = parse_store(buf, parsed);
     mu_assert("set foo 17 12 != bytes error", STR_EQ(resp, "CLIENT_ERROR: no bytes (length) received\r\n"));
 
-    prime_buf(buf, "set foo 17 12 bar");
-    resp = parse_store(buf, parsed);
-    mu_assert("set foo 17 12 bar != bytes error", STR_EQ(resp, "CLIENT_ERROR: not all byte chars converted\r\n"));
-
     prime_buf(buf, "set foo 17 12 14ar");
     resp = parse_store(buf, parsed);
-    mu_assert("set foo 17 12 14ar != bytes error", STR_EQ(resp, "CLIENT_ERROR: not all byte chars converted\r\n"));
+    mu_assert("set foo 17 12 14ar != bytes error", STR_EQ(resp, "CLIENT_ERROR: bytes not number\r\n"));
 
     prime_buf(buf, "set foo 17 12 14");
     resp = parse_store(buf, parsed);
@@ -124,11 +116,11 @@ char *test_parse_change()
 
     prime_buf(buf, "incr foo bar");
     resp = parse_change(buf, parsed);
-    mu_assert("incr foo bar != convert error", STR_EQ(resp, "CLIENT_ERROR: not all of value converted\r\n"));
+    mu_assert("incr foo bar != convert error", STR_EQ(resp, "CLIENT_ERROR: value not number\r\n"));
 
     prime_buf(buf, "incr foo 14ar");
     resp = parse_change(buf, parsed);
-    mu_assert("incr foo 14ar != convert error", STR_EQ(resp, "CLIENT_ERROR: not all of value converted\r\n"));
+    mu_assert("incr foo 14ar != convert error", STR_EQ(resp, "CLIENT_ERROR: value not number\r\n"));
 
     return 0;
 }
