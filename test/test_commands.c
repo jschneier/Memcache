@@ -7,7 +7,6 @@
 static int
 set_up()
 {
-
     int sock_fd;
     struct hostent *server;
     struct sockaddr_in serv_addr;
@@ -30,7 +29,6 @@ set_up()
 char *
 test_set()
 {
-
     char buf[BUFSIZE];
     int sock_fd = set_up();
     char *msg = "set foo 14 0 7\r\n";

@@ -112,7 +112,6 @@ thread(void *vargp)
 static int
 init_socket(void)
 {
-
     int sock_fd;
     struct addrinfo hints, *info;
     memset(&hints, 0, sizeof(hints));

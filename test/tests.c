@@ -3,7 +3,9 @@
 
 int tests_run = 0;
 
-static char *all_tests() {
+static char *
+all_tests()
+{
     mu_run_test(test_cmd);
     mu_run_test(test_parse_store);
     mu_run_test(test_parse_change);
@@ -12,7 +14,9 @@ static char *all_tests() {
     return 0;
 }
 
-int main(void) {
+int
+main(void)
+{
     char *result = all_tests();
     if (result != 0)
         printf("%s\n", result);

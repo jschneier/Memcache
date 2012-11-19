@@ -4,7 +4,6 @@
 unsigned
 hash(char *str)
 {
-
     unsigned long hash = 5381;
     int c;
 

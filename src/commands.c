@@ -43,7 +43,6 @@ store(parsed_text *parsed)
 static char *
 set(unsigned index, parsed_text *parsed)
 {
-
     block *cur = database[index];
     if (cur == NULL)
         cur = init_block(parsed);
@@ -63,7 +62,6 @@ set(unsigned index, parsed_text *parsed)
 static char *
 add(unsigned index, parsed_text *parsed)
 {
-
     block *cur = database[index];
     if (cur == NULL)
         cur = init_block(parsed);
@@ -87,7 +85,6 @@ add(unsigned index, parsed_text *parsed)
 static char *
 replace(unsigned index, parsed_text *parsed)
 {
-
     block *cur = database[index];
     if (cur == NULL)
         return NOT_STORED; //only want to store if we already match the key
@@ -112,7 +109,6 @@ replace(unsigned index, parsed_text *parsed)
 static char *
 pend(unsigned index, parsed_text *parsed)
 {
-
     block *cur = database[index];
     char buf[BUFSIZE];
 
@@ -161,7 +157,6 @@ touch(unsigned index, parsed_text *parsed)
 static char *
 incr_decr(unsigned index, parsed_text *parsed)
 {
-
     block *cur = database[index];
     char *ret;
     char buf[BUFSIZE];
@@ -206,7 +201,6 @@ incr_decr(unsigned index, parsed_text *parsed)
 char *
 delete(parsed_text *parsed)
 {
-
     unsigned index = hash(parsed->key) % DBSIZE;
     block *cur = database[index];
 
@@ -226,7 +220,6 @@ delete(parsed_text *parsed)
 void
 get(parsed_text *parsed, char *messages[MAX_KEYS][2])
 {
-
     int i;
     block *cur;
     char *key;
@@ -249,7 +242,6 @@ get(parsed_text *parsed, char *messages[MAX_KEYS][2])
 static block *
 init_block(parsed_text *parsed)
 {
-
     block *ret = malloc(sizeof(block));
 
     if (ret == NULL) {
