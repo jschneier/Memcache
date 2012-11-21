@@ -33,7 +33,7 @@ store(parsed_text *parsed)
         return pend(index, parsed);
 
     /*
-    else
+    else if (STR_EQ(parsed->cmd, "cas"))
         return cas(index, parsed);
     */
     else
@@ -181,7 +181,6 @@ incr_decr(unsigned index, parsed_text *parsed)
     if (STR_EQ(parsed->cmd, "decr")) {
         if (parsed->change > value)
             value = 0;
-
         else
             value -= parsed->change;
     }

@@ -1,6 +1,3 @@
-#include <unistd.h>
-#include <pthread.h>
-
 #include "memcache.h"
 #include "commands.h"
 #include "parse.h"
@@ -12,6 +9,7 @@ static void *thread(void *);
 static int init_socket(void);
 
 block *database[DBSIZE];
+pthread_rwlock_t rw_lock = PTHREAD_RWLOCK_INITIALIZER;
 
 static void *
 thread(void *vargp)
@@ -53,19 +51,22 @@ thread(void *vargp)
             strip_n_trailing_spaces(buf, 2);
             if (status == -1)
                 //fprintf(stderr, "recv error: %s\n", strerror(errno));
-
             if ((unsigned) status != parsed->bytes) {
                 fprintf(stderr, "data block size not equal to header value\n");
                 break;
             }
 
+            pthread_rwlock_wrlock(&rw_lock);
             resp = store(parsed);
+            pthread_rwlock_unlock(&rw_lock);
             if (parsed->no_reply == false)
                 send(conn_fd, resp, strlen(resp), 0);
             break;
         case GET:
             parse_get(buf, parsed);
+            pthread_rwlock_rdlock(&rw_lock);
             get(parsed, messages);
+            pthread_rwlock_unlock(&rw_lock);
             for(i=0; i<MAX_KEYS; ++i) {
                 if(messages[i] == NULL)
                     break;
@@ -78,14 +79,18 @@ thread(void *vargp)
             break;
         case DEL:
             parse_del(buf, parsed);
+            pthread_rwlock_wrlock(&rw_lock);
             resp = delete(parsed);
+            pthread_rwlock_unlock(&rw_lock);
 
             if (parsed->no_reply == false)
                 send(conn_fd, resp, strlen(resp), 0);
             break;
         case CHANGE:
             parse_change(buf, parsed);
+            pthread_rwlock_wrlock(&rw_lock);
             resp = change(parsed);
+            pthread_rwlock_unlock(&rw_lock);
 
             if (parsed->no_reply == false)
                 send(conn_fd, resp, strlen(resp), 0);
@@ -137,14 +142,16 @@ init_socket(void)
 int
 main(void)
 {
-
     int sock_fd, *conn_fd;
     pthread_t tid;
     struct sockaddr_storage addr;
     socklen_t clientsize = sizeof(addr);
 
-    if ((sock_fd = init_socket()) == -1)
+    sock_fd = init_socket();
+    if (sock_fd == -1) {
         perror("Error returned in init_socket");
+        exit(1);
+        }
 
     for(;;) {
         conn_fd = malloc(sizeof(int));
@@ -155,6 +162,8 @@ main(void)
         *conn_fd = accept(sock_fd, (struct sockaddr *) &addr, &clientsize);
         pthread_create(&tid, NULL, &thread, conn_fd);
     }
+
+    pthread_rwlock_destroy(&rw_lock);
 
     return 0;
 }
