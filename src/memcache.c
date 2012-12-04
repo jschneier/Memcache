@@ -2,11 +2,10 @@
 #include "commands.h"
 #include "parse.h"
 
-#define PORT "3303"
 #define BACKLOG 20
 
 static void *thread(void *);
-static int init_socket(void);
+static int init_socket(char *);
 
 block *database[DBSIZE];
 pthread_rwlock_t rw_lock = PTHREAD_RWLOCK_INITIALIZER;
@@ -115,7 +114,7 @@ thread(void *vargp)
 }
 
 static int
-init_socket(void)
+init_socket(char *port)
 {
     int sock_fd;
     struct addrinfo hints, *info;
@@ -124,7 +123,7 @@ init_socket(void)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(NULL, PORT, &hints, &info) != 0)
+    if (getaddrinfo(NULL, port, &hints, &info) != 0)
         return -1;
 
     sock_fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
@@ -140,14 +139,19 @@ init_socket(void)
 }
 
 int
-main(void)
+main(int argc, char **argv)
 {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+        exit(1);
+    }
+    char *port = argv[1];
     int sock_fd, *conn_fd;
     pthread_t tid;
     struct sockaddr_storage addr;
     socklen_t clientsize = sizeof(addr);
 
-    sock_fd = init_socket();
+    sock_fd = init_socket(port);
     if (sock_fd == -1) {
         perror("Error returned in init_socket");
         exit(1);
