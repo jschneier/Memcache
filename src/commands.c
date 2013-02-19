@@ -1,4 +1,5 @@
 #include "memcache.h"
+#include "utils.h"
 
 #define STORED "STORED\r\n"
 #define NOT_STORED "NOT_STORED\r\n"

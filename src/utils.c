@@ -1,4 +1,5 @@
-#include "memcache.h"
+#include <string.h>
+#include <ctype.h>
 
 /*DJB2 string hashing algorithm*/
 unsigned

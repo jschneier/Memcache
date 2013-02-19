@@ -11,25 +11,25 @@ tests: $(test_objects)
 	$(CC) $(CFLAGS) -g -o tests $(test_objects)
 
 tests.o: test/tests.h test/tests.c
-	$(CC) $(CFLAGS) -I inc -c test/tests.c
+	$(CC) $(CFLAGS) -c test/tests.c
 
-test_parse.o: inc/parse.h test/tests.h test/test_parse.c
-	$(CC) $(CFLAGS) -I inc -c test/test_parse.c
+test_parse.o: parse.h test/tests.h test/test_parse.c
+	$(CC) $(CFLAGS) -c test/test_parse.c
 
-test_commands.o: inc/commands.h test/tests.h test/test_commands.c
-	$(CC) $(CFLAGS) -I inc -c test/test_commands.c
+test_commands.o: commands.h test/tests.h test/test_commands.c
+	$(CC) $(CFLAGS) -c test/test_commands.c
 
-memcache.o: inc/parse.h inc/commands.h inc/memcache.h src/memcache.c
-	$(CC) $(CFLAGS) -I inc -c src/memcache.c
+memcache.o: parse.h commands.h memcache.h src/memcache.c
+	$(CC) $(CFLAGS) -c src/memcache.c
 
-commands.o: src/commands.c inc/memcache.h inc/commands.h
-	$(CC) $(CFLAGS) -I inc -c src/commands.c
+commands.o: src/commands.c memcache.h commands.h
+	$(CC) $(CFLAGS) -c src/commands.c
 
-parse.o: inc/memcache.h inc/parse.h src/parse.c
-	$(CC) $(CFLAGS) -I inc -c src/parse.c
+parse.o: memcache.h parse.h src/parse.c
+	$(CC) $(CFLAGS) -c src/parse.c
 
-utils.o: inc/memcache.h src/utils.c
-	$(CC) $(CFLAGS) -I inc -c src/utils.c
+utils.o: memcache.h src/utils.c
+	$(CC) $(CFLAGS) -c src/utils.c
 
 .PHONY: clean
 clean:

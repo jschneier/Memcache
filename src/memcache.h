@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <netdb.h>
 #include <errno.h>
-#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,9 +13,6 @@
 #define DBSIZE 2048
 #define MAX_KEYS 10
 #define STR_EQ(s1, s2) (strcmp(s1, s2) == 0)
-
-unsigned hash(char *str);
-void strip_n_trailing_spaces(char *, int);
 
 typedef struct {
     char *cmd;
