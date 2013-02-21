@@ -142,11 +142,20 @@ init_socket(char *port)
 int
 main(int argc, char **argv)
 {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-        exit(1);
+    char *port = NULL;
+    int c;
+
+    while ((c = getopt(argc, argv, "p:")) != -1)
+        switch (c) {
+            case 'p':
+                port = optarg;
+                break;
+        }
+
+    if (port == NULL) {
+        port = "1492";
     }
-    char *port = argv[1];
+
     int sock_fd, *conn_fd;
     pthread_t tid;
     struct sockaddr_storage addr;
