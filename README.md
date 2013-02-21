@@ -11,7 +11,7 @@ To build the project run (from the top level directory where the Makefile is)
 
 Now the memcache server can be started by running:
 
-    ./memcache <port>
+    ./memcache [-p <port>]
 
 ### Still to come
 
