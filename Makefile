@@ -13,22 +13,22 @@ tests: $(test_objects)
 tests.o: test/tests.h test/tests.c
 	$(CC) $(CFLAGS) -c test/tests.c
 
-test_parse.o: parse.h test/tests.h test/test_parse.c
+test_parse.o: src/parse.h test/tests.h test/test_parse.c
 	$(CC) $(CFLAGS) -c test/test_parse.c
 
-test_commands.o: commands.h test/tests.h test/test_commands.c
+test_commands.o: src/commands.h test/tests.h test/test_commands.c
 	$(CC) $(CFLAGS) -c test/test_commands.c
 
-memcache.o: parse.h commands.h memcache.h src/memcache.c
+memcache.o: src/parse.h src/commands.h src/memcache.h src/memcache.c
 	$(CC) $(CFLAGS) -c src/memcache.c
 
-commands.o: src/commands.c memcache.h commands.h
+commands.o: src/commands.c src/memcache.h src/commands.h
 	$(CC) $(CFLAGS) -c src/commands.c
 
-parse.o: memcache.h parse.h src/parse.c
+parse.o: src/memcache.h src/parse.h src/parse.c
 	$(CC) $(CFLAGS) -c src/parse.c
 
-utils.o: memcache.h src/utils.c
+utils.o: src/memcache.h src/utils.c
 	$(CC) $(CFLAGS) -c src/utils.c
 
 .PHONY: clean
