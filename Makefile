@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -Isrc
 
 objects = memcache.o commands.o parse.o utils.o
 test_objects = parse.o test_parse.o tests.o
